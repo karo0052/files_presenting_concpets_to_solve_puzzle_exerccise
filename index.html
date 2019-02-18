@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Puzzle</title>
+    <style>
+      #container {
+        display: grid;
+        background-color: rgb(199, 199, 199);
+      }
+      .dropzone {
+        outline: 0.5px solid grey;
+      }
+
+      .piece {
+        outline: 0.5px solid black;
+        position: absolute;
+      }
+      img {
+        max-width: 100px;
+        margin-bottom: -4px;
+      }
+
+      input,
+      button {
+        margin-bottom: 20px;
+        cursor: pointer;
+      }
+      h2 {
+        position: absolute;
+        top: -500px;
+        left: 0px;
+        z-index: 10;
+      }
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body class="theBody">
+    <img src="" alt="" />
+    <h1></h1>
+    <input type="text" id="image_input" placeholder="Image url" />
+    <input type="text" id="xPieces_input" placeholder="Pieces horisontically" />
+    <input type="text" id="yPieces_input" placeholder="Pieces vertically" />
+
+    <button id="button_create">Create puzzle!</button>
+    <button id="button_reload" class="hidden">Create new puzzle!</button>
+
+    <div id="container"></div>
+
+    <script>
+      "use strict";
+      let imageAddress;
+      let dragged;
+
+      document.addEventListener("DOMContentLoaded", startTheScript);
+      let xPieces, yPieces, test, counter;
+      function startTheScript() {
+        document
+          .querySelector("#button_create")
+          .addEventListener("click", loadTheImage);
+      }
+
+      function loadTheImage() {
+        imageAddress = document.querySelector("#image_input").value;
+        document.querySelector("img").src = imageAddress;
+        xPieces = document.querySelector("#xPieces_input").value;
+        yPieces = document.querySelector("#yPieces_input").value;
+        document.querySelector("img").onload = createPuzzle;
+        document.querySelector("#image_input").classList.add("hidden");
+        document.querySelector("#xPieces_input").classList.add("hidden");
+        document.querySelector("#yPieces_input").classList.add("hidden");
+        document.querySelector("#button_create").classList.add("hidden");
+        document.querySelector("#button_reload").classList.remove("hidden");
+      }
+
+      function createPuzzle() {
+        console.log("createPuzzle");
+        counter = 0;
+        const container_height = getPictureDimensions().container_height;
+        const container_width = getPictureDimensions().container_width;
+        test = xPieces * yPieces;
+        console.log(test);
+        create2Dsystem(xPieces, container_width, yPieces, container_height);
+        createpieces(xPieces, container_width, yPieces, container_height);
+        document
+          .querySelector("#button_reload")
+          .addEventListener("click", reload);
+      }
+
+      function getPictureDimensions() {
+        console.log("getPictureDimensions");
+        const container_height = document.querySelector("img").naturalHeight;
+        const container_width = document.querySelector("img").naturalWidth;
+
+        return { container_height, container_width };
+      }
+
+      function create2Dsystem(
+        xPieces,
+        container_width,
+        yPieces,
+        container_height
+      ) {
+        console.log("create2Dsystem");
+        document.querySelector(
+          "#container"
+        ).style.gridTemplateColumns = `repeat(${xPieces}, 1fr)`;
+        document.querySelector(
+          "#container"
+        ).style.width = `${container_width}px`;
+        for (let y = 0; y < yPieces; y++) {
+          for (let x = 0; x < xPieces; x++) {
+            let dropzone = document.createElement("div");
+            dropzone.dataset.xyid = `${x}${y}`;
+            dropzone.style.height = container_height / yPieces + "px";
+            dropzone.classList.add("dropzone");
+            dropzone.classList.add("dropzone");
+
+            document.querySelector("#container").appendChild(dropzone);
+          }
+        }
+      }
+
+      function createpieces(
+        xPieces,
+        container_width,
+        yPieces,
+        container_height
+      ) {
+        console.log("createpieces");
+        document.querySelector(
+          "#container"
+        ).style.gridTemplateColumns = `repeat(${xPieces}, 1fr)`;
+        document.querySelector(
+          "#container"
+        ).style.width = `${container_width}px`;
+        for (let y = 0; y < yPieces; y++) {
+          for (let x = 0; x < xPieces; x++) {
+            let piece = document.createElement("div");
+            piece.dataset.xyid = `${x}${y}`;
+            piece.draggable = true;
+            piece.style.height = container_height / yPieces + "px";
+            const piece_height = parseFloat(piece.style.height);
+            piece.style.width = container_width / xPieces + "px";
+            const piece_width = parseFloat(piece.style.width);
+            piece.classList.add("piece");
+            piece.style.backgroundImage =
+              "url(" + '"' + imageAddress + '"' + ")";
+            piece.style.backgroundImage = `url('${imageAddress}')`;
+
+            const pos1 = x * piece_width;
+            console.log(pos1);
+            const pos2 = y * piece_height;
+            console.log(pos2);
+            piece.style.backgroundPosition = `-${pos1}px -${pos2}px`;
+            document.querySelector("#container").appendChild(piece);
+          }
+        }
+        document.querySelectorAll(".piece").forEach(eachPiece => {
+          eachPiece.style.left = `${Math.random() * 500 + 400}px`;
+        });
+      }
+
+      /* events fired on the draggable target */
+      document.addEventListener("drag", function(event) {});
+
+      document.addEventListener("dragstart", function(event) {
+        // store a ref. on the dragged elem
+        dragged = event.target;
+        // make it half transparent
+        event.target.style.opacity = 0.5;
+      });
+
+      document.addEventListener("dragend", function(event) {
+        // reset the transparency
+        event.target.style.opacity = "";
+      });
+
+      /* events fired on the drop targets */
+      document.addEventListener("dragover", function(event) {
+        // prevent default to allow drop
+        event.preventDefault();
+      });
+
+      document.addEventListener("drop", function(event) {
+        // prevent default action (open as link for some elements)
+        event.preventDefault();
+        console.log("DROP", event.target.className);
+        // move dragged elem to the selected drop target
+        if (event.target.className == "dropzone") {
+          event.target.style.background = "";
+          dragged.parentNode.removeChild(dragged);
+          event.target.appendChild(dragged);
+          dragged.style.left = event.target.style.left;
+          dragged.style.top = event.target.style.top;
+
+          const dropzoneId = event.target.getAttribute("data-xyid");
+          const pieceId = dragged.getAttribute("data-xyid");
+          console.log(dropzoneId);
+          console.log(pieceId);
+          if (dropzoneId == pieceId) {
+            console.log("match");
+            event.target.style.pointerEvents = "none";
+            counter++;
+          }
+          if (counter == test) {
+            document.querySelectorAll(".piece").forEach(eachPiece => {
+              eachPiece.style.outline = "none";
+            });
+            document.querySelector("h1").textContent =
+              "CONGRATULATIONS - YOU SOLVED IT!";
+          }
+        } else if (event.target.className == "theBody") {
+          // park the dragged elem somewhere on the body
+          dragged.style.left = event.pageX + "px";
+          dragged.style.top = event.pageY + "px";
+        }
+      });
+      function reload() {
+        console.log("reload");
+        location.reload();
+      }
+    </script>
+  </body>
+</html>
