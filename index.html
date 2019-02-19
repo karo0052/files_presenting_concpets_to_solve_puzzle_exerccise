@@ -148,8 +148,6 @@
             piece.style.width = container_width / xPieces + "px";
             const piece_width = parseFloat(piece.style.width);
             piece.classList.add("piece");
-            piece.style.backgroundImage =
-              "url(" + '"' + imageAddress + '"' + ")";
             piece.style.backgroundImage = `url('${imageAddress}')`;
 
             const pos1 = x * piece_width;
@@ -161,8 +159,8 @@
           }
         }
         document.querySelectorAll(".piece").forEach(eachPiece => {
-          eachPiece.style.left = `${Math.random() * 500 + 400}px`;
-          eachPiece.style.top = `${Math.random() * 500 + 100}px`;
+          eachPiece.style.left = `${Math.random() * 500 + 600}px`;
+          eachPiece.style.top = `${Math.random() * 300 + 100}px`;
         });
       }
 
