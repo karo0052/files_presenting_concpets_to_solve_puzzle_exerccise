@@ -43,7 +43,7 @@
     <img src="" alt="" />
     <h1></h1>
     <input type="text" id="image_input" placeholder="Image url" />
-    <input type="text" id="xPieces_input" placeholder="Pieces horisontically" />
+    <input type="text" id="xPieces_input" placeholder="Pieces horizontally" />
     <input type="text" id="yPieces_input" placeholder="Pieces vertically" />
 
     <button id="button_create">Create puzzle!</button>
@@ -162,6 +162,7 @@
         }
         document.querySelectorAll(".piece").forEach(eachPiece => {
           eachPiece.style.left = `${Math.random() * 500 + 400}px`;
+          eachPiece.style.top = `${Math.random() * 500 + 100}px`;
         });
       }
 
